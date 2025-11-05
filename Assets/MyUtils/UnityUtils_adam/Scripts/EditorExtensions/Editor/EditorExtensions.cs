@@ -8,10 +8,10 @@ namespace UnityUtils {
     /// </summary>
     public static class EditorExtensions {
         /// <summary>
-        /// Checks if a file exists at the specified path and prompts the user for confirmation to overwrite it.
+        /// 检查指定路径的文件是否存在，如果存在则提示用户确认是否覆盖
         /// </summary>
-        /// <param name="path">The file path to check.</param>
-        /// <returns>True if the file does not exist or the user confirms to overwrite it; otherwise, false.</returns>
+        /// <param name="path">要检查的文件路径</param>
+        /// <returns>如果文件不存在或用户确认覆盖则返回true；否则返回false</returns>
         public static bool ConfirmOverwrite(this string path) {
             if (File.Exists(path)) {
                 return EditorUtility.DisplayDialog
@@ -22,15 +22,14 @@ namespace UnityUtils {
                     "No"
                 );
             }
-
             return true;
         }
 
         /// <summary>
-        /// Opens a folder browser dialog and returns the selected folder path.
+        /// 打开文件夹浏览对话框并返回选中的文件夹路径
         /// </summary>
-        /// <param name="defaultPath">The default path to open the folder browser at.</param>
-        /// <returns>The selected folder path.</returns>
+        /// <param name="defaultPath">打开文件夹浏览器的默认路径</param>
+        /// <returns>选中的文件夹路径</returns>
         public static string BrowseForFolder(this string defaultPath) {
             return EditorUtility.SaveFolderPanel
             (
@@ -41,9 +40,9 @@ namespace UnityUtils {
         }
 
         /// <summary>
-        /// Pings and selects the specified asset in the Unity Editor.
+        /// 在Unity编辑器中高亮并选中指定的资源
         /// </summary>
-        /// <param name="asset">The asset to ping and select.</param>
+        /// <param name="asset">要高亮并选中的资源</param>
         public static void PingAndSelect(this Object asset) {
             EditorGUIUtility.PingObject(asset);
             Selection.activeObject = asset;

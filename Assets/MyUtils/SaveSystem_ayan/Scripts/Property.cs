@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 namespace SaveSystem_ayan
 {
     public class Property : MonoBehaviour
@@ -129,14 +130,14 @@ namespace SaveSystem_ayan
             height = saveData.playerHeight;
             position = saveData.playerPosition;
         }
-        [UnityEditor.MenuItem("Developer/Delete Player Data Prefs")]
+        //[MenuItem("Developer/Delete Player Data Prefs")]
         public static void DeletePlayerDataPrefs()
         {
             //PlayerPrefs.DeleteAll();
             //PlayerPrefs.DeleteKey(PLAY_DATA_KEY);
             PlayerPrefs.DeleteKey(PLAY_DATA_KEY);
         }
-        [UnityEditor.MenuItem("Developer/Delete Player Data Save Files")]
+        //[MenuItem("Developer/Delete Player Data Save Files")]
         public static void DeletePlayerDataSaveFile()
         {
             SaveSystem.DeleteSaveFile(PLAYER_DATA_FILE_NAME);
