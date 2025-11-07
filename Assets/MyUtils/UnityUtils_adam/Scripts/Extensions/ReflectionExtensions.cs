@@ -4,8 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace UnityUtils {
-    public static class ReflectionExtensions {
+namespace UnityUtils
+{
+    public static class ReflectionExtensions
+    {
+        // 预定义类型显示名称字典
         static readonly Dictionary<Type, string> TypeDisplayNames = new() {
             { typeof(int), "int" },
             { typeof(float), "float" },
@@ -24,6 +27,7 @@ namespace UnityUtils {
             { typeof(object), "object" }
         };
 
+        // 值元组类型定义
         static readonly Type[] ValueTupleTypes = {
             typeof(ValueTuple<>),
             typeof(ValueTuple<,>),
@@ -35,6 +39,7 @@ namespace UnityUtils {
             typeof(ValueTuple<,,,,,,,>)
         };
 
+        // 基本类型转换层次结构
         static readonly Type[][] PrimitiveTypeCastHierarchy = {
             new[] { typeof(byte), typeof(sbyte), typeof(char) },
             new[] { typeof(short), typeof(ushort) },
@@ -45,95 +50,101 @@ namespace UnityUtils {
         };
 
         /// <summary>
-        /// Returns the default value for the given type.
+        /// 返回给定类型的默认值
         /// </summary>
-        /// <param name="type">The type for which to get the default value.</param>
-        /// <returns>An instance of the type with default value, or null if the type is a reference type.</returns>
-        public static object Default(this Type type) {
+        /// <param name="type">要获取默认值的类型</param>
+        /// <returns>具有默认值的类型实例，如果类型是引用类型则为null</returns>
+        public static object Default(this Type type)
+        {
             return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
 
         /// <summary>
-        /// Determines if a type is assignable from the specified generic type parameter.
+        /// 确定类型是否可从指定的泛型类型参数赋值
         /// </summary>
-        /// <typeparam name="T">The type to check against.</typeparam>
-        /// <param name="type">The type to check.</param>
-        /// <returns>True if the specified type is assignable from the generic type parameter T, otherwise false.</returns>
-        public static bool Is<T>(this Type type) {
+        /// <typeparam name="T">要检查的类型</typeparam>
+        /// <param name="type">要检查的类型</param>
+        /// <returns>如果指定类型可从泛型类型参数T赋值则为true，否则为false</returns>
+        public static bool Is<T>(this Type type)
+        {
             return typeof(T).IsAssignableFrom(type);
         }
 
         /// <summary>
-        /// Determines if a type is a delegate.
+        /// 确定类型是否为委托
         /// </summary>
-        /// <param name="type">The type to check.</param>
-        /// <returns>True if the type is a delegate, otherwise false.</returns>
+        /// <param name="type">要检查的类型</param>
+        /// <returns>如果类型是委托则为true，否则为false</returns>
         public static bool IsDelegate(this Type type) => typeof(Delegate).IsAssignableFrom(type);
 
         /// <summary>
-        /// Determines if a type is a strongly typed delegate.
+        /// 确定类型是否为强类型委托
         /// </summary>
-        /// <param name="type">The type to check.</param>
-        /// <returns>True if the type is a strongly typed delegate, otherwise false.</returns>
-        public static bool IsStrongDelegate(this Type type) {
+        /// <param name="type">要检查的类型</param>
+        /// <returns>如果类型是强类型委托则为true，否则为false</returns>
+        public static bool IsStrongDelegate(this Type type)
+        {
             if (!type.IsDelegate()) return false;
 
             return !type.IsAbstract;
         }
 
         /// <summary>
-        /// Determines if a field is a delegate.
+        /// 确定字段是否为委托
         /// </summary>
-        /// <param name="fieldInfo">The field to check.</param>
-        /// <returns>True if the field is a delegate, otherwise false.</returns>
+        /// <param name="fieldInfo">要检查的字段</param>
+        /// <returns>如果字段是委托则为true，否则为false</returns>
         public static bool IsDelegate(this FieldInfo fieldInfo) => fieldInfo.FieldType.IsDelegate();
 
         /// <summary>
-        /// Determines if a field is a strongly typed delegate.
+        /// 确定字段是否为强类型委托
         /// </summary>
-        /// <param name="fieldInfo">The field to query.</param>
-        /// <returns>True if the field is a strongly typed delegate, otherwise false.</returns>
+        /// <param name="fieldInfo">要查询的字段</param>
+        /// <returns>如果字段是强类型委托则为true，否则为false</returns>
         public static bool IsStrongDelegate(this FieldInfo fieldInfo) => fieldInfo.FieldType.IsStrongDelegate();
 
         /// <summary>
-        /// Determines if the type is a generic type of the given non-generic type.
+        /// 确定类型是否为给定非泛型类型的泛型类型
         /// </summary>
-        /// <param name="genericType">The Type to be used</param>
-        /// <param name="nonGenericType">The non-generic type to test against.</param>
-        /// <returns>If the type is a generic type of the non-generic type.</returns>
-        public static bool IsGenericTypeOf(this Type genericType, Type nonGenericType) {
+        /// <param name="genericType">要使用的类型</param>
+        /// <param name="nonGenericType">要测试的非泛型类型</param>
+        /// <returns>如果类型是非泛型类型的泛型类型则为true</returns>
+        public static bool IsGenericTypeOf(this Type genericType, Type nonGenericType)
+        {
             if (!genericType.IsGenericType) { return false; }
 
             return genericType.GetGenericTypeDefinition() == nonGenericType;
         }
 
         /// <summary>
-        /// Determines if the type is a derived type of the given base type.
+        /// 确定类型是否为给定基类的派生类型
         /// </summary>
-        /// <param name="type">this type</param>
-        /// <param name="baseType">The base type to test against.</param>
-        /// <returns>If the type is a derived type of the base type.</returns>
+        /// <param name="type">此类型</param>
+        /// <param name="baseType">要测试的基类型</param>
+        /// <returns>如果类型是基类型的派生类型则为true</returns>
         public static bool IsDerivedTypeOf(this Type type, Type baseType) => baseType.IsAssignableFrom(type);
 
         /// <summary>
-        /// Determines if an object the given type can be cast to the specified type.
+        /// 确定给定类型的对象是否可以转换为指定类型
         /// </summary>
-        /// <param name="from">this object</param>
-        /// <param name="to">The destination type of the cast.</param>
-        /// <param name="implicitly">If only implicit casts should be considered.</param>
-        /// <returns>If the cast can be performed.</returns>
+        /// <param name="from">此对象</param>
+        /// <param name="to">转换的目标类型</param>
+        /// <param name="implicitly">如果只应考虑隐式转换</param>
+        /// <returns>如果可以执行转换则为true</returns>
         public static bool IsCastableTo(this Type from, Type to, bool implicitly = false)
             => to.IsAssignableFrom(from) || from.HasCastDefined(to, implicitly);
 
         /// <summary>
-        /// Determines if a cast is defined between two types.
+        /// 确定两个类型之间是否定义了转换
         /// </summary>
-        /// <param name="from">The source type to check for cast definitions.</param>
-        /// <param name="to">The destination type to check for cast definitions.</param>
-        /// <param name="implicitly">If only implicit casts should be considered.</param>
-        /// <returns>True if a cast is defined between the types, otherwise false.</returns>
-        static bool HasCastDefined(this Type from, Type to, bool implicitly) {
-            if ((!from.IsPrimitive && !from.IsEnum) || (!to.IsPrimitive && !to.IsEnum)) {
+        /// <param name="from">要检查转换定义的源类型</param>
+        /// <param name="to">要检查转换定义的目标类型</param>
+        /// <param name="implicitly">如果只应考虑隐式转换</param>
+        /// <returns>如果类型之间定义了转换则为true，否则为false</returns>
+        static bool HasCastDefined(this Type from, Type to, bool implicitly)
+        {
+            if ((!from.IsPrimitive && !from.IsEnum) || (!to.IsPrimitive && !to.IsEnum))
+            {
                 return IsCastDefined
                        (
                            to,
@@ -151,13 +162,16 @@ namespace UnityUtils {
                        );
             }
 
-            if (!implicitly) {
+            if (!implicitly)
+            {
                 return from == to || (from != typeof(bool) && to != typeof(bool));
             }
 
             IEnumerable<Type> lowerTypes = Enumerable.Empty<Type>();
-            foreach (Type[] types in PrimitiveTypeCastHierarchy) {
-                if (types.Any(t => t == to)) {
+            foreach (Type[] types in PrimitiveTypeCastHierarchy)
+            {
+                if (types.Any(t => t == to))
+                {
                     return lowerTypes.Any(t => t == from);
                 }
 
@@ -168,47 +182,52 @@ namespace UnityUtils {
         }
 
         /// <summary>
-        /// Determines if a cast is defined between two types.
+        /// 确定两个类型之间是否定义了转换
         /// </summary>
-        /// <param name="type">The type to check for cast definitions.</param>
-        /// <param name="baseType">A function to get the base type from a method.</param>
-        /// <param name="derivedType">A function to get the derived type from a method.</param>
-        /// <param name="implicitly">If only implicit casts should be considered.</param>
-        /// <param name="lookInBase">If the base hierarchy should be searched for cast definitions.</param>
-        /// <returns>True if a cast is defined between the types, otherwise false.</returns>
+        /// <param name="type">要检查转换定义的类型</param>
+        /// <param name="baseType">从方法获取基类型的函数</param>
+        /// <param name="derivedType">从方法获取派生类型的函数</param>
+        /// <param name="implicitly">如果只应考虑隐式转换</param>
+        /// <param name="lookInBase">是否应在基类层次结构中搜索转换定义</param>
+        /// <returns>如果类型之间定义了转换则为true，否则为false</returns>
         static bool IsCastDefined(
             Type type,
             Func<MethodInfo, Type> baseType,
             Func<MethodInfo, Type> derivedType,
             bool implicitly,
             bool lookInBase
-        ) {
-            // Set the binding flags to search for public and static methods, and optionally include the base hierarchy.
+        )
+        {
+            // 设置绑定标志以搜索公共和静态方法，并可选择包括基类层次结构
             var flags = BindingFlags.Public | BindingFlags.Static | (lookInBase ? BindingFlags.FlattenHierarchy : BindingFlags.DeclaredOnly);
 
-            // Get all methods from the type with the specified binding flags.
+            // 使用指定的绑定标志从类型获取所有方法
             MethodInfo[] methods = type.GetMethods(flags);
 
-            // Check if any method is an implicit or explicit cast operator and if the base type is assignable from the derived type.
+            // 检查是否有方法是隐式或显式转换运算符，以及基类型是否可从派生类型赋值
             return methods.Where(m => m.Name == "op_Implicit" || (!implicitly && m.Name == "op_Explicit"))
                 .Any(m => baseType(m).IsAssignableFrom(derivedType(m)));
         }
 
         /// <summary>
-        /// Dynamically casts an object to the specified type.
+        /// 将对象动态转换为指定类型
         /// </summary>
-        /// <param name="type">The destination type of the cast.</param>
-        /// <param name="data">The object to cast.</param>
-        /// <returns>The dynamically cast object.</returns>
-        public static object Cast(this Type type, object data) {
-            if (type.IsInstanceOfType(data)) {
+        /// <param name="type">转换的目标类型</param>
+        /// <param name="data">要转换的对象</param>
+        /// <returns>动态转换后的对象</returns>
+        public static object Cast(this Type type, object data)
+        {
+            if (type.IsInstanceOfType(data))
+            {
                 return data;
             }
 
-            try {
+            try
+            {
                 return Convert.ChangeType(data, type);
             }
-            catch (InvalidCastException) {
+            catch (InvalidCastException)
+            {
                 var srcType = data.GetType();
                 var dataParam = Expression.Parameter(srcType, "data");
                 Expression body = Expression.Convert(Expression.Convert(dataParam, srcType), type);
@@ -219,47 +238,54 @@ namespace UnityUtils {
         }
 
         /// <summary>
-        /// Determines if the given method is an override.
+        /// 确定给定方法是否为重写
         /// </summary>
-        /// <param name="methodInfo">The method to check.</param>
-        /// <returns>True if the method is an override, otherwise false.</returns>
+        /// <param name="methodInfo">要检查的方法</param>
+        /// <returns>如果方法是重写则为true，否则为false</returns>
         public static bool IsOverride(this MethodInfo methodInfo)
             => methodInfo.GetBaseDefinition().DeclaringType != methodInfo.DeclaringType;
 
         /// <summary>
-        /// Checks if the specified attribute is present on the provider.
+        /// 检查提供者上是否存在指定的属性
         /// </summary>
-        /// <typeparam name="T">The attribute to test.</typeparam>
-        /// <param name="provider">The attribute provider.</param>
-        /// <param name="searchInherited">If base declarations should be searched.</param>
-        /// <returns>True if the attribute is present, otherwise false.</returns>
-        public static bool HasAttribute<T>(this ICustomAttributeProvider provider, bool searchInherited = true) where T : Attribute {
-            try {
+        /// <typeparam name="T">要测试的属性</typeparam>
+        /// <param name="provider">属性提供者</param>
+        /// <param name="searchInherited">是否应搜索基类声明</param>
+        /// <returns>如果属性存在则为true，否则为false</returns>
+        public static bool HasAttribute<T>(this ICustomAttributeProvider provider, bool searchInherited = true) where T : Attribute
+        {
+            try
+            {
                 return provider.IsDefined(typeof(T), searchInherited);
             }
-            catch (MissingMethodException) {
+            catch (MissingMethodException)
+            {
                 return false;
             }
         }
 
         /// <summary>
-        /// Gets a formatted display name for a given type.
+        /// 获取给定类型的格式化显示名称
         /// </summary>
-        /// <param name="type">The type to generate a display name for.</param>
-        /// <param name="includeNamespace">If the namespace should be included when generating the typename.</param>
-        /// <returns>The generated display name.</returns>
-        public static string GetDisplayName(this Type type, bool includeNamespace = false) {
-            if (type.IsGenericParameter) {
+        /// <param name="type">要生成显示名称的类型</param>
+        /// <param name="includeNamespace">生成类型名时是否应包括命名空间</param>
+        /// <returns>生成的显示名称</returns>
+        public static string GetDisplayName(this Type type, bool includeNamespace = false)
+        {
+            if (type.IsGenericParameter)
+            {
                 return type.Name;
             }
 
-            if (type.IsArray) {
+            if (type.IsArray)
+            {
                 int rank = type.GetArrayRank();
                 string innerTypeName = GetDisplayName(type.GetElementType(), includeNamespace);
                 return $"{innerTypeName}[{new string(',', rank - 1)}]";
             }
 
-            if (TypeDisplayNames.TryGetValue(type, out string baseName1)) {
+            if (TypeDisplayNames.TryGetValue(type, out string baseName1))
+            {
                 if (!type.IsGenericType || type.IsConstructedGenericType)
                     return baseName1;
                 Type[] genericArgs = type.GetGenericArguments();
@@ -267,22 +293,27 @@ namespace UnityUtils {
 
             }
 
-            if (type.IsGenericTypeOf(typeof(Nullable<>))) {
+            if (type.IsGenericTypeOf(typeof(Nullable<>)))
+            {
                 var innerType = type.GetGenericArguments()[0];
                 return $"{innerType.GetDisplayName()}?";
             }
 
-            if (type.IsGenericType) {
+            if (type.IsGenericType)
+            {
                 var baseType = type.GetGenericTypeDefinition();
                 Type[] genericArgs = type.GetGenericArguments();
 
-                if (ValueTupleTypes.Contains(baseType)) {
+                if (ValueTupleTypes.Contains(baseType))
+                {
                     return GetTupleDisplayName(type, includeNamespace);
                 }
 
-                if (type.IsConstructedGenericType) {
+                if (type.IsConstructedGenericType)
+                {
                     var genericNames = new string[genericArgs.Length];
-                    for (var i = 0; i < genericArgs.Length; i++) {
+                    for (var i = 0; i < genericArgs.Length; i++)
+                    {
                         genericNames[i] = GetDisplayName(genericArgs[i], includeNamespace);
                     }
 
@@ -298,7 +329,8 @@ namespace UnityUtils {
             }
 
             var declaringType = type.DeclaringType;
-            if (declaringType == null) {
+            if (declaringType == null)
+            {
                 return includeNamespace
                     ? type.FullName
                     : type.Name;
@@ -310,12 +342,13 @@ namespace UnityUtils {
         }
 
         /// <summary>
-        /// Gets a formatted display name for a tuple type.
+        /// 获取元组类型的格式化显示名称
         /// </summary>
-        /// <param name="type">The tuple type to generate a display name for.</param>
-        /// <param name="includeNamespace">If the namespace should be included when generating the typename.</param>
-        /// <returns>The generated display name for the tuple type.</returns>
-        static string GetTupleDisplayName(this Type type, bool includeNamespace = false) {
+        /// <param name="type">要生成显示名称的元组类型</param>
+        /// <param name="includeNamespace">生成类型名时是否应包括命名空间</param>
+        /// <returns>元组类型的生成显示名称</returns>
+        static string GetTupleDisplayName(this Type type, bool includeNamespace = false)
+        {
             IEnumerable<string> parts = type
                 .GetGenericArguments()
                 .Select(x => x.GetDisplayName(includeNamespace));
@@ -324,19 +357,21 @@ namespace UnityUtils {
         }
 
         /// <summary>
-        /// Determines if two methods from different types have the same signature.
+        /// 确定来自不同类型的两方法是否具有相同的签名
         /// </summary>
-        /// <param name="a">First method</param>
-        /// <param name="b">Second method</param>
-        /// <returns><c>true</c> if they are equal</returns>
-        public static bool AreMethodsEqual(MethodInfo a, MethodInfo b) {
+        /// <param name="a">第一个方法</param>
+        /// <param name="b">第二个方法</param>
+        /// <returns><c>true</c> 如果它们相等</returns>
+        public static bool AreMethodsEqual(MethodInfo a, MethodInfo b)
+        {
             if (a.Name != b.Name) return false;
 
             ParameterInfo[] paramsA = a.GetParameters();
             ParameterInfo[] paramsB = b.GetParameters();
 
             if (paramsA.Length != paramsB.Length) return false;
-            for (var i = 0; i < paramsA.Length; i++) {
+            for (var i = 0; i < paramsA.Length; i++)
+            {
                 var pa = paramsA[i];
                 var pb = paramsB[i];
 
@@ -359,7 +394,8 @@ namespace UnityUtils {
                 Type[] genericB = b.GetGenericArguments();
 
                 if (genericA.Length != genericB.Length) return false;
-                for (var i = 0; i < genericA.Length; i++) {
+                for (var i = 0; i < genericA.Length; i++)
+                {
                     var ga = genericA[i];
                     var gb = genericB[i];
 
@@ -371,12 +407,13 @@ namespace UnityUtils {
         }
 
         /// <summary>
-        /// Rebase a method onto a new type by finding the corresponding method with an equal signature.
+        /// 通过找到具有相等签名的对应方法，将方法重新基于到新类型上
         /// </summary>
-        /// <param name="method">Method to rebase</param>
-        /// <param name="newBase">New type to rebase the method onto</param>
-        /// <returns>The rebased method</returns>
-        public static MethodInfo RebaseMethod(this MethodInfo method, Type newBase) {
+        /// <param name="method">要重新基于的方法</param>
+        /// <param name="newBase">要重新基于方法的新类型</param>
+        /// <returns>重新基于后的方法</returns>
+        public static MethodInfo RebaseMethod(this MethodInfo method, Type newBase)
+        {
             var flags = BindingFlags.Default;
 
             flags |= method.IsStatic ? BindingFlags.Static : BindingFlags.Instance;
@@ -387,12 +424,14 @@ namespace UnityUtils {
                 .Where(x => AreMethodsEqual(x, method))
                 .ToArray();
 
-            if (candidates.Length == 0) {
-                throw new ArgumentException($"Could not rebase method {method} onto type {newBase} as no matching candidates were found");
+            if (candidates.Length == 0)
+            {
+                throw new ArgumentException($"无法将方法 {method} 重新基于到类型 {newBase} 上，因为未找到匹配的候选方法");
             }
 
-            if (candidates.Length > 1) {
-                throw new ArgumentException($"Could not rebase method {method} onto type {newBase} as too many matching candidates were found");
+            if (candidates.Length > 1)
+            {
+                throw new ArgumentException($"无法将方法 {method} 重新基于到类型 {newBase} 上，因为找到太多匹配的候选方法");
             }
 
             return candidates[0];

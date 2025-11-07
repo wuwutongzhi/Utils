@@ -1,31 +1,37 @@
 ﻿using UnityEngine;
 
-namespace UnityUtils {
-    public static class RendererExtensions {
+namespace UnityUtils
+{
+    public static class RendererExtensions
+    {
         /// <summary>
-        /// Enables ZWrite for materials in this Renderer that have a '_Color' property. This will allow the materials 
-        /// to write to the Z buffer, which could be used to affect how subsequent rendering is handled, 
-        /// for instance, ensuring correct layering of transparent objects.
+        /// 为此Renderer中具有'_Color'属性的材质启用ZWrite。这将允许材质写入Z缓冲区，
+        /// 可用于影响后续渲染的处理方式，例如确保透明对象的正确分层。
         /// </summary>    
-        public static void EnableZWrite(this Renderer renderer) {
-            foreach (Material material in renderer.materials) {
-                if (material.HasProperty("_Color")) {
+        public static void EnableZWrite(this Renderer renderer)
+        {
+            foreach (Material material in renderer.materials)
+            {
+                if (material.HasProperty("_Color"))
+                {
                     material.SetInt("_ZWrite", 1);
-                    material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
+                    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
                 }
             }
         }
 
         /// <summary>
-        /// Disables ZWrite for materials in this Renderer that have a '_Color' property. This would stop 
-        /// the materials from writing to the Z buffer, which may be desirable in some cases to prevent subsequent 
-        /// rendering from being occluded, like in rendering of semi-transparent or layered objects.
+        /// 为此Renderer中具有'_Color'属性的材质禁用ZWrite。这将停止材质写入Z缓冲区，
+        /// 在某些情况下可能是可取的，以防止后续渲染被遮挡，例如在半透明或分层对象的渲染中。
         /// </summary>
-        public static void DisableZWrite(this Renderer renderer) {
-            foreach (Material material in renderer.materials) {
-                if (material.HasProperty("_Color")) {
+        public static void DisableZWrite(this Renderer renderer)
+        {
+            foreach (Material material in renderer.materials)
+            {
+                if (material.HasProperty("_Color"))
+                {
                     material.SetInt("_ZWrite", 0);
-                    material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent + 100;
+                    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 100;
                 }
             }
         }

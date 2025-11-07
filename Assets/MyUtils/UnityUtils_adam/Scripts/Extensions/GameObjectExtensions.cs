@@ -1,28 +1,31 @@
 ﻿using UnityEngine;
 using System.Linq;
 
-namespace UnityUtils {
-    public static class GameObjectExtensions {
+namespace UnityUtils
+{
+    public static class GameObjectExtensions
+    {
         /// <summary>
-        /// This method is used to hide the GameObject in the Hierarchy view.
+        /// 此方法用于在层级视图中隐藏GameObject
         /// </summary>
         /// <param name="gameObject"></param>
-        public static void HideInHierarchy(this GameObject gameObject) {
+        public static void HideInHierarchy(this GameObject gameObject)
+        {
             gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
 
         /// <summary>
-        /// Gets a component of the given type attached to the GameObject. If that type of component does not exist, it adds one.
+        /// 获取GameObject上指定类型的组件。如果该类型的组件不存在，则添加一个,避免了繁琐的null检查和手动添加
         /// </summary>
         /// <remarks>
-        /// This method is useful when you don't know if a GameObject has a specific type of component,
-        /// but you want to work with that component regardless. Instead of checking and adding the component manually,
-        /// you can use this method to do both operations in one line.
+        /// 当你不确定GameObject是否具有特定类型的组件，但无论如何都需要使用该组件时，
+        /// 此方法非常有用。无需手动检查和添加组件，你可以使用此方法在一行代码中完成两个操作
         /// </remarks>
-        /// <typeparam name="T">The type of the component to get or add.</typeparam>
-        /// <param name="gameObject">The GameObject to get the component from or add the component to.</param>
-        /// <returns>The existing component of the given type, or a new one if no such component exists.</returns>    
-        public static T GetOrAdd<T>(this GameObject gameObject) where T : Component {
+        /// <typeparam name="T">要获取或添加的组件类型</typeparam>
+        /// <param name="gameObject">要从中获取组件或向其添加组件的GameObject</param>
+        /// <returns>指定类型的现有组件，如果不存在则返回新添加的组件</returns>    
+        public static T GetOrAdd<T>(this GameObject gameObject) where T : Component
+        {
             T component = gameObject.GetComponent<T>();
             if (!component) component = gameObject.AddComponent<T>();
 
@@ -30,110 +33,119 @@ namespace UnityUtils {
         }
 
         /// <summary>
-        /// Returns the object itself if it exists, null otherwise.
+        /// 如果对象存在则返回对象本身，否则返回null
         /// </summary>
         /// <remarks>
-        /// This method helps differentiate between a null reference and a destroyed Unity object. Unity's "== null" check
-        /// can incorrectly return true for destroyed objects, leading to misleading behaviour. The OrNull method use
-        /// Unity's "null check", and if the object has been marked for destruction, it ensures an actual null reference is returned,
-        /// aiding in correctly chaining operations and preventing NullReferenceExceptions.
+        /// 此方法有助于区分空引用和已销毁的Unity对象。Unity的"== null"检查可能对已销毁的对象错误地返回true，
+        /// 导致误导性行为。OrNull方法使用Unity的"空检查"，如果对象已被标记为销毁，它确保返回实际的空引用，
+        /// 有助于正确链接操作并防止NullReferenceExceptions
         /// </remarks>
-        /// <typeparam name="T">The type of the object.</typeparam>
-        /// <param name="obj">The object being checked.</param>
-        /// <returns>The object itself if it exists and not destroyed, null otherwise.</returns>
+        /// <typeparam name="T">对象的类型</typeparam>
+        /// <param name="obj">被检查的对象</param>
+        /// <returns>如果对象存在且未销毁则返回对象本身，否则返回null</returns>
         public static T OrNull<T>(this T obj) where T : Object => obj ? obj : null;
 
         /// <summary>
-        /// Destroys all children of the game object
+        /// 销毁游戏对象的所有子对象
         /// </summary>
-        /// <param name="gameObject">GameObject whose children are to be destroyed.</param>
-        public static void DestroyChildren(this GameObject gameObject) {
+        /// <param name="gameObject">要销毁其子对象的GameObject</param>
+        public static void DestroyChildren(this GameObject gameObject)
+        {
             gameObject.transform.DestroyChildren();
         }
 
         /// <summary>
-        /// Immediately destroys all children of the given GameObject.
+        /// 立即销毁给定GameObject的所有子对象
         /// </summary>
-        /// <param name="gameObject">GameObject whose children are to be destroyed.</param>
-        public static void DestroyChildrenImmediate(this GameObject gameObject) {
+        /// <param name="gameObject">要销毁其子对象的GameObject</param>
+        public static void DestroyChildrenImmediate(this GameObject gameObject)
+        {
             gameObject.transform.DestroyChildrenImmediate();
         }
 
         /// <summary>
-        /// Enables all child GameObjects associated with the given GameObject.
+        /// 启用与给定GameObject关联的所有子GameObject
         /// </summary>
-        /// <param name="gameObject">GameObject whose child GameObjects are to be enabled.</param>
-        public static void EnableChildren(this GameObject gameObject) {
+        /// <param name="gameObject">要启用其子GameObject的GameObject</param>
+        public static void EnableChildren(this GameObject gameObject)
+        {
             gameObject.transform.EnableChildren();
         }
 
         /// <summary>
-        /// Disables all child GameObjects associated with the given GameObject.
+        /// 禁用与给定GameObject关联的所有子GameObject
         /// </summary>
-        /// <param name="gameObject">GameObject whose child GameObjects are to be disabled.</param>
-        public static void DisableChildren(this GameObject gameObject) {
+        /// <param name="gameObject">要禁用其子GameObject的GameObject</param>
+        public static void DisableChildren(this GameObject gameObject)
+        {
             gameObject.transform.DisableChildren();
         }
 
         /// <summary>
-        /// Resets the GameObject's transform's position, rotation, and scale to their default values.
+        /// 将GameObject的变换的位置、旋转和比例重置为其默认值
         /// </summary>
-        /// <param name="gameObject">GameObject whose transformation is to be reset.</param>
-        public static void ResetTransformation(this GameObject gameObject) {
+        /// <param name="gameObject">要重置其变换的GameObject</param>
+        public static void ResetTransformation(this GameObject gameObject)
+        {
             gameObject.transform.Reset();
         }
 
         /// <summary>
-        /// Returns the hierarchical path in the Unity scene hierarchy for this GameObject.
+        /// 返回此GameObject在Unity场景层级中的层级路径
         /// </summary>
-        /// <param name="gameObject">The GameObject to get the path for.</param>
-        /// <returns>A string representing the full hierarchical path of this GameObject in the Unity scene.
-        /// This is a '/'-separated string where each part is the name of a parent, starting from the root parent and ending
-        /// with the name of the specified GameObjects parent.</returns>
-        public static string Path(this GameObject gameObject) {
+        /// <param name="gameObject">要获取路径的GameObject</param>
+        /// <returns>表示此GameObject在Unity场景中完整层级路径的字符串。
+        /// 这是一个以'/'分隔的字符串，其中每个部分是父级的名称，从根父级开始，
+        /// 以指定GameObject的父级名称结束</returns>
+        public static string Path(this GameObject gameObject)
+        {
             return "/" + string.Join("/",
                 gameObject.GetComponentsInParent<Transform>().Select(t => t.name).Reverse().ToArray());
         }
 
         /// <summary>
-        /// Returns the full hierarchical path in the Unity scene hierarchy for this GameObject.
+        /// 返回此GameObject在Unity场景层级中的完整层级路径
         /// </summary>
-        /// <param name="gameObject">The GameObject to get the path for.</param>
-        /// <returns>A string representing the full hierarchical path of this GameObject in the Unity scene.
-        /// This is a '/'-separated string where each part is the name of a parent, starting from the root parent and ending
-        /// with the name of the specified GameObject itself.</returns>
-        public static string PathFull(this GameObject gameObject) {
+        /// <param name="gameObject">要获取路径的GameObject</param>
+        /// <returns>表示此GameObject在Unity场景中完整层级路径的字符串。
+        /// 这是一个以'/'分隔的字符串，其中每个部分是父级的名称，从根父级开始，
+        /// 以指定GameObject本身的名称结束</returns>
+        public static string PathFull(this GameObject gameObject)
+        {
             return gameObject.Path() + "/" + gameObject.name;
         }
 
         /// <summary>
-        /// Recursively sets the provided layer for this GameObject and all of its descendants in the Unity scene hierarchy.
+        /// 递归地为此GameObject及其在Unity场景层级中的所有后代设置提供的层级
         /// </summary>
-        /// <param name="gameObject">The GameObject to set layers for.</param>
-        /// <param name="layer">The layer number to set for GameObject and all of its descendants.</param>
-        public static void SetLayersRecursively(this GameObject gameObject, int layer) {
+        /// <param name="gameObject">要设置层级的GameObject</param>
+        /// <param name="layer">要为GameObject及其所有后代设置的层级编号</param>
+        public static void SetLayersRecursively(this GameObject gameObject, int layer)
+        {
             gameObject.layer = layer;
             gameObject.transform.ForEveryChild(child => child.gameObject.SetLayersRecursively(layer));
         }
-        
+
         /// <summary>
-        /// Activates the GameObject associated with the MonoBehaviour and returns the instance.
+        /// 激活与MonoBehaviour关联的GameObject并返回实例
         /// </summary>
-        /// <typeparam name="T">The type of the MonoBehaviour.</typeparam>
-        /// <param name="obj">The MonoBehaviour whose GameObject will be activated.</param>
-        /// <returns>The instance of the MonoBehaviour.</returns>
-        public static T SetActive<T>(this T obj) where T : MonoBehaviour {
+        /// <typeparam name="T">MonoBehaviour的类型</typeparam>
+        /// <param name="obj">其GameObject将被激活的MonoBehaviour</param>
+        /// <returns>MonoBehaviour的实例</returns>
+        public static T SetActive<T>(this T obj) where T : MonoBehaviour
+        {
             obj.gameObject.SetActive(true);
             return obj;
         }
 
         /// <summary>
-        /// Deactivates the GameObject associated with the MonoBehaviour and returns the instance.
+        /// 停用与MonoBehaviour关联的GameObject并返回实例
         /// </summary>
-        /// <typeparam name="T">The type of the MonoBehaviour.</typeparam>
-        /// <param name="obj">The MonoBehaviour whose GameObject will be deactivated.</param>
-        /// <returns>The instance of the MonoBehaviour.</returns>
-        public static T SetInactive<T>(this T obj) where T : MonoBehaviour {
+        /// <typeparam name="T">MonoBehaviour的类型</typeparam>
+        /// <param name="obj">其GameObject将被停用的MonoBehaviour</param>
+        /// <returns>MonoBehaviour的实例</returns>
+        public static T SetInactive<T>(this T obj) where T : MonoBehaviour
+        {
             obj.gameObject.SetActive(false);
             return obj;
         }

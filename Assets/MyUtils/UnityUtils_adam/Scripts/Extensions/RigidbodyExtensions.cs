@@ -1,17 +1,20 @@
 using UnityEngine;
 
-namespace UnityUtils {
-    public static class RigidbodyExtensions {
+namespace UnityUtils
+{
+    public static class RigidbodyExtensions
+    {
         /// <summary>
-        /// Changes the direction of the Rigidbody's velocity while maintaining its speed.
+        /// 改变Rigidbody速度的方向，同时保持其速度大小不变
         /// </summary>
-        /// <param name="rigidbody">The Rigidbody to change direction.</param>
-        /// <param name="direction">The new direction for the Rigidbody.</param>
-        /// <returns>The modified Rigidbody for method chaining.</returns>
-        public static Rigidbody ChangeDirection(this Rigidbody rigidbody, Vector3 direction) {
+        /// <param name="rigidbody">要改变方向的Rigidbody</param>
+        /// <param name="direction">Rigidbody的新方向</param>
+        /// <returns>修改后的Rigidbody，用于方法链式调用</returns>
+        public static Rigidbody ChangeDirection(this Rigidbody rigidbody, Vector3 direction)
+        {
             if (direction.sqrMagnitude == 0f) return rigidbody;
             direction.Normalize();
-            
+
 #if UNITY_6000_0_OR_NEWER
             rigidbody.linearVelocity = direction * rigidbody.linearVelocity.magnitude;
 #else
@@ -21,11 +24,12 @@ namespace UnityUtils {
         }
 
         /// <summary>
-        /// Stops the Rigidbody by setting its linear and angular velocities to zero.
+        /// 通过将线速度和角速度设置为零来停止Rigidbody
         /// </summary>
-        /// <param name="rigidbody">The Rigidbody to stop.</param>
-        /// <returns>The modified Rigidbody for method chaining.</returns>
-        public static Rigidbody Stop(this Rigidbody rigidbody) {
+        /// <param name="rigidbody">要停止的Rigidbody</param>
+        /// <returns>修改后的Rigidbody，用于方法链式调用</returns>
+        public static Rigidbody Stop(this Rigidbody rigidbody)
+        {
 #if UNITY_6000_0_OR_NEWER
             rigidbody.linearVelocity = Vector3.zero;
 #else
