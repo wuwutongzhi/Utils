@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityUtils;
-namespace ccc
+namespace cccTest
 {
     public class Test
     {
